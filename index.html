@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KisanSpray">
+<meta name="theme-color" content="#1a7a3c">
+<meta name="description" content="Pesticide spray reminder system for farmers">
+<title>KisanSpray - Farmer Spray Reminder</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1a7a3c;--gl:#28a85a;--gd:#0f4d25;--leaf:#5cb85c;
+  --sun:#f5c842;--sky:#e8f5e9;--wh:#fff;--gray:#f4f6f4;
+  --text:#1c2a1e;--muted:#6b8070;--danger:#d94040;--warn:#e67e22;
+  --blue:#1565c0;--wa:#25d366;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Baloo 2','Noto Sans Devanagari',cursive;background:var(--sky);color:var(--text);min-height:100vh;}
+header{background:linear-gradient(135deg,var(--gd),var(--green) 60%,var(--leaf));padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 16px rgba(0,0,0,.18);}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo h1{color:#fff;font-size:1.5rem;font-weight:800;line-height:1;}
+.logo p{color:rgba(255,255,255,.72);font-size:.73rem;}
+.tdbg{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:5px 14px;color:#fff;font-size:.8rem;text-align:right;}
+.tdbg b{display:block;font-size:.95rem;}
+.tabs{display:flex;background:var(--gd);padding:0 12px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tb{padding:9px 13px;color:rgba(255,255,255,.6);border:none;background:none;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+.tb.active{color:var(--sun);border-bottom-color:var(--sun);}
+.tb:hover{color:#fff;}
+main{max-width:960px;margin:0 auto;padding:16px 12px 80px;}
+.sec{display:none;}.sec.active{display:block;}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.sc{background:var(--wh);border-radius:14px;padding:12px 14px;box-shadow:0 2px 12px rgba(26,122,60,.10);display:flex;align-items:center;gap:10px;}
+.si{font-size:1.6rem;}.sl{font-size:.67rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.sv{font-size:1.4rem;font-weight:800;line-height:1;}
+.sr .sv{color:var(--danger);}.so .sv{color:var(--warn);}.sg2 .sv{color:var(--green);}.sb2 .sv{color:var(--blue);}
+.stitle{font-size:.96rem;font-weight:700;color:var(--gd);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.rlist{display:flex;flex-direction:column;gap:12px;}
+.rc{background:var(--wh);border-radius:14px;padding:14px;box-shadow:0 2px 12px rgba(26,122,60,.10);border-left:5px solid var(--leaf);}
+.rc.ov{border-left-color:var(--danger);}
+.rc.td{border-left-color:var(--sun);background:#fffde7;}
+.rc.up{border-left-color:var(--leaf);}
+.rctop{display:flex;align-items:flex-start;gap:11px;flex-wrap:wrap;}
+.av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--leaf));color:#fff;font-weight:800;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ci{flex:1;min-width:120px;}
+.fn{font-size:.96rem;font-weight:700;}
+.cm{font-size:.77rem;color:var(--muted);margin-top:2px;}
+.cm span{margin-right:7px;}
+.sbadge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.70rem;font-weight:700;margin-top:4px;}
+.sbo{background:#fde8e8;color:var(--danger);}.sbt{background:#fff8e1;color:#a05000;}.sbu{background:#e8f5e9;color:var(--gd);}
+.rcbtns{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start;margin-left:auto;}
+.bsp{background:var(--sun);color:#5a3800;border:none;border-radius:20px;padding:6px 13px;font-family:inherit;font-size:.79rem;font-weight:700;cursor:pointer;}
+.bsp:hover{background:#e0b800;}
+.rtr{margin-top:11px;background:#f7fbf7;border-radius:11px;padding:11px;border:1px solid #d0e8d0;}
+.trtitle{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
+.trgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tri{background:var(--wh);border-radius:9px;padding:9px;border:2px solid #e0ece0;}
+.tri.rdone{border-color:var(--leaf);background:#f0faf0;}
+.trl{font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.trbs{display:flex;gap:5px;}
+.trk{flex:1;padding:6px 4px;border:none;border-radius:7px;font-family:inherit;font-size:.73rem;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;}
+.trk:disabled{cursor:default;}
+.tc{background:#e3f2fd;color:var(--blue);}.tc:hover:not(:disabled){background:#bbdefb;}.tc.dk{background:var(--blue);color:#fff;}
+.tw{background:#e8f5e9;color:#1a5e20;}.tw:hover:not(:disabled){background:#c8e6c9;}.tw.dk{background:var(--wa);color:#fff;}
+.trts{font-size:.63rem;color:var(--muted);margin-top:4px;line-height:1.35;}
+.atrl{margin-top:9px;background:#fafff8;border-radius:9px;padding:8px 11px;border:1px dashed #b8d8b8;}
+.atrltitle{font-size:.66rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:5px;}
+.atrlrow{font-size:.67rem;color:var(--text);padding:2px 0;display:flex;gap:7px;flex-wrap:wrap;}
+.atrlrow .at{color:var(--muted);min-width:108px;flex-shrink:0;}
+.fc{background:var(--wh);border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(26,122,60,.10);}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;}
+.fg input,.fg select,.fg textarea{border:2px solid #dce8dc;border-radius:10px;padding:8px 12px;font-family:inherit;font-size:.91rem;background:var(--gray);color:var(--text);transition:border .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--gl);background:#fff;}
+.fg textarea{resize:vertical;min-height:76px;}
+.ff{grid-column:1/-1;}
+.bsub{background:linear-gradient(135deg,var(--green),var(--leaf));color:#fff;border:none;border-radius:10px;padding:11px 26px;font-family:inherit;font-size:.96rem;font-weight:700;cursor:pointer;width:100%;margin-top:8px;box-shadow:0 4px 14px rgba(26,122,60,.3);}
+.bsub:hover{opacity:.9;}
+.prevbox{background:#e8f5e9;border-radius:9px;padding:10px 13px;font-weight:700;color:var(--gd);font-size:.88rem;display:none;}
+.spbld{display:flex;flex-direction:column;gap:7px;}
+.sprw{display:flex;align-items:center;gap:8px;background:var(--gray);border-radius:9px;padding:8px 12px;}
+.splbl{font-size:.81rem;font-weight:700;color:var(--gd);white-space:nowrap;min-width:64px;}
+.sprw input{flex:1;border:2px solid #dce8dc;border-radius:7px;padding:7px 10px;font-family:inherit;font-size:.89rem;background:#fff;color:var(--text);}
+.sprw input:focus{outline:none;border-color:var(--gl);}
+.spunit{font-size:.77rem;color:var(--muted);white-space:nowrap;}
+.brmsp{background:#fde8e8;color:var(--danger);border:none;border-radius:7px;padding:5px 9px;font-size:.88rem;cursor:pointer;font-weight:700;flex-shrink:0;}
+.baddsp{background:var(--sky);border:2px dashed var(--leaf);color:var(--gd);border-radius:9px;padding:8px;font-family:inherit;font-size:.84rem;font-weight:700;cursor:pointer;width:100%;margin-top:5px;}
+.baddsp:hover{background:#c8e6c9;}
+.tw2{overflow-x:auto;border-radius:13px;box-shadow:0 2px 12px rgba(26,122,60,.10);}
+table{width:100%;border-collapse:collapse;background:var(--wh);}
+thead th{background:var(--gd);color:#fff;padding:9px 12px;font-size:.74rem;font-weight:700;text-align:left;text-transform:uppercase;white-space:nowrap;}
+tbody tr{border-bottom:1px solid #edf2ed;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#f0f8f0;}
+tbody td{padding:8px 12px;font-size:.84rem;vertical-align:top;}
+.fa{display:flex;gap:5px;flex-wrap:wrap;}
+.bsm{padding:4px 10px;border-radius:20px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;border:none;}
+.be{background:#fff3cd;color:#856404;}.bd{background:#fde8e8;color:var(--danger);}
+.chips{display:flex;gap:4px;flex-wrap:wrap;}
+.chip{background:#e8f5e9;color:var(--gd);border-radius:20px;padding:2px 8px;font-size:.72rem;font-weight:700;}
+.fbar{display:flex;gap:8px;margin-bottom:13px;flex-wrap:wrap;}
+.fbar input,.fbar select{border:2px solid #dce8dc;border-radius:9px;padding:7px 11px;font-family:inherit;font-size:.87rem;background:var(--wh);}
+.fbar input[type=text]{flex:1;min-width:130px;}
+.rpgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.rpc{background:var(--wh);border-radius:12px;padding:13px 14px;box-shadow:0 2px 12px rgba(26,122,60,.10);text-align:center;}
+.rpico{font-size:1.7rem;margin-bottom:3px;}.rpval{font-size:1.35rem;font-weight:800;color:var(--gd);}
+.rplbl{font-size:.69rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.logi{background:var(--wh);border-radius:11px;padding:10px 13px;box-shadow:0 2px 10px rgba(26,122,60,.08);margin-bottom:7px;display:flex;gap:11px;align-items:flex-start;}
+.logico{font-size:1.2rem;flex-shrink:0;margin-top:2px;}.logb{flex:1;}
+.logt{font-size:.85rem;font-weight:700;}.logm{font-size:.73rem;color:var(--muted);margin-top:2px;}
+.logtm{font-size:.69rem;color:var(--muted);white-space:nowrap;min-width:100px;text-align:right;}
+.tvars{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.vc{background:#e8f5e9;color:var(--gd);border:1px solid #b8d8b8;border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:700;cursor:pointer;}
+.vc:hover{background:#c8e6c9;}
+.imgbox{border:2px dashed #b8d8b8;border-radius:11px;padding:16px;text-align:center;cursor:pointer;}
+.imgbox:hover{background:#f0faf0;}
+.fcblist{max-height:210px;overflow-y:auto;border:2px solid #dce8dc;border-radius:9px;padding:8px;background:var(--gray);}
+.fcbrow{display:flex;align-items:center;gap:7px;padding:5px;border-radius:7px;cursor:pointer;}
+.fcbrow:hover{background:#e8f5e9;}
+.fcbrow input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--green);}
+.fcbrow label{cursor:pointer;font-size:.85rem;flex:1;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--wh);border-radius:16px;padding:22px;max-width:440px;width:calc(100% - 32px);box-shadow:0 8px 40px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto;}
+.modal h3{font-size:1rem;font-weight:800;margin-bottom:13px;color:var(--gd);}
+.mbtns{display:flex;gap:9px;margin-top:14px;}
+.bcan{flex:1;background:#f0f0f0;color:var(--text);border:none;border-radius:9px;padding:10px;font-family:inherit;font-size:.91rem;font-weight:700;cursor:pointer;}
+.bcon{flex:1;color:#fff;border:none;border-radius:9px;padding:10px;font-family:inherit;font-size:.91rem;font-weight:700;cursor:pointer;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--gd);color:#fff;padding:10px 22px;border-radius:30px;font-weight:700;font-size:.88rem;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .3s;z-index:2000;pointer-events:none;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;}
+.empty{text-align:center;padding:32px;color:var(--muted);font-size:.95rem;}
+.mt{margin-top:16px;}.sep{border:none;border-top:2px solid #e8f0e8;margin:16px 0;}
+@media(max-width:640px){
+  .sg{grid-template-columns:1fr 1fr;}
+  .fgrid{grid-template-columns:1fr;}
+  .trgrid{grid-template-columns:1fr;}
+  .rpgrid{grid-template-columns:1fr 1fr;}
+}
+
+/* PWA Install Banner */
+#pwa-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#0f4d25,#1a7a3c);color:#fff;padding:14px 16px;z-index:3000;box-shadow:0 -4px 20px rgba(0,0,0,.25);animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+#pwa-banner .pb-inner{display:flex;align-items:center;gap:12px;max-width:960px;margin:0 auto;}
+#pwa-banner img{width:44px;height:44px;border-radius:10px;flex-shrink:0;}
+#pwa-banner .pb-txt{flex:1;}
+#pwa-banner .pb-txt b{display:block;font-size:.95rem;}
+#pwa-banner .pb-txt span{font-size:.76rem;opacity:.82;}
+#pwa-banner .pb-btns{display:flex;gap:8px;flex-shrink:0;}
+.pb-install{background:#f5c842;color:#3a2800;border:none;border-radius:20px;padding:8px 16px;font-family:inherit;font-size:.83rem;font-weight:800;cursor:pointer;}
+.pb-later{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:20px;padding:8px 13px;font-family:inherit;font-size:.83rem;font-weight:600;cursor:pointer;}
+/* Offline indicator */
+#offline-badge{display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#d94040;color:#fff;padding:6px 18px;border-radius:20px;font-size:.78rem;font-weight:700;z-index:2500;box-shadow:0 3px 12px rgba(0,0,0,.2);}
+#offline-badge.show{display:block;}
+/* Safe area for notch phones */
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);}
+header{padding-top:calc(14px + env(safe-area-inset-top));}
+/* Splash screen */
+#splash{position:fixed;inset:0;background:linear-gradient(135deg,#0f4d25,#1a7a3c 60%,#5cb85c);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
+#splash.hidden{opacity:0;pointer-events:none;}
+#splash img{width:96px;height:96px;border-radius:22px;box-shadow:0 8px 32px rgba(0,0,0,.3);margin-bottom:20px;}
+#splash h2{color:#fff;font-size:1.8rem;font-weight:800;}
+#splash p{color:rgba(255,255,255,.75);font-size:.9rem;margin-top:6px;}
+#splash .sp-dot{display:flex;gap:7px;margin-top:28px;}
+#splash .sp-dot span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);animation:dotPulse 1.2s infinite;}
+#splash .sp-dot span:nth-child(2){animation-delay:.2s;}
+#splash .sp-dot span:nth-child(3){animation-delay:.4s;}
+@keyframes dotPulse{0%,80%,100%{transform:scale(.6);background:rgba(255,255,255,.3);}40%{transform:scale(1);background:#fff;}}
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <img src="icons/icon-192.png" alt="KisanSpray">
+  <h2>KisanSpray</h2>
+  <p>Farmer Spray Reminder System</p>
+  <div class="sp-dot"><span></span><span></span><span></span></div>
+</div>
+
+<!-- OFFLINE BADGE -->
+<div id="offline-badge">&#9889; Offline Mode - Data saved locally</div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="pwa-banner">
+  <div class="pb-inner">
+    <img src="icons/icon-192.png" alt="KisanSpray">
+    <div class="pb-txt">
+      <b>Install KisanSpray App</b>
+      <span>Add to home screen - works offline!</span>
+    </div>
+    <div class="pb-btns">
+      <button class="pb-install" onclick="installPWA()">&#11015; Install</button>
+      <button class="pb-later" onclick="dismissBanner()">Later</button>
+    </div>
+  </div>
+</div>
+<header>
+  <div class="logo">
+    <span style="font-size:1.8rem">&#127807;</span>
+    <div><h1>KisanSpray</h1><p>Farmer Spray Reminder System</p></div>
+  </div>
+  <div class="tdbg"><span>Today</span><b id="todayDate"></b></div>
+</header>
+<div class="tabs">
+  <button class="tb active" onclick="showTab('dashboard')">&#127968; Dashboard</button>
+  <button class="tb" onclick="showTab('add-tx')">&#10133; New Sale</button>
+  <button class="tb" onclick="showTab('all-records')">&#128203; Records</button>
+  <button class="tb" onclick="showTab('reports')">&#128202; Reports</button>
+  <button class="tb" onclick="showTab('farmers')">&#128104; Farmers</button>
+  <button class="tb" onclick="showTab('crops')">&#127806; Crops</button>
+  <button class="tb" onclick="showTab('settings')">&#9881; Settings</button>
+  <button class="tb" onclick="showTab('promo')">&#128227; Promo</button>
+</div>
+<main>
+
+<!-- DASHBOARD -->
+<div class="sec active" id="dashboard">
+  <div class="sg">
+    <div class="sc sr"><span class="si">&#128308;</span><div><div class="sl">Overdue</div><div class="sv" id="st-ov">0</div></div></div>
+    <div class="sc so"><span class="si">&#128993;</span><div><div class="sl">Due Today</div><div class="sv" id="st-td">0</div></div></div>
+    <div class="sc sg2"><span class="si">&#128994;</span><div><div class="sl">Next 3 Days</div><div class="sv" id="st-up">0</div></div></div>
+    <div class="sc sb2"><span class="si">&#9989;</span><div><div class="sl">Sprayed (month)</div><div class="sv" id="st-dn">0</div></div></div>
+  </div>
+  <div><div class="stitle">&#128308; Overdue Sprays</div><div class="rlist" id="ov-list"></div></div>
+  <div class="mt"><div class="stitle">&#128993; Due Today</div><div class="rlist" id="td-list"></div></div>
+  <div class="mt"><div class="stitle">&#128994; Upcoming - Next 3 Days</div><div class="rlist" id="up-list"></div></div>
+</div>
+
+<!-- NEW SALE -->
+<div class="sec" id="add-tx">
+  <div class="fc">
+    <div class="stitle">&#10133; Record New Spray / Sale</div>
+    <div class="fgrid">
+      <div class="fg"><label>Farmer Name</label><select id="f-farmer" onchange="fillPhone()"><option value="">-- Select Farmer --</option></select></div>
+      <div class="fg"><label>Phone</label><input type="tel" id="f-phone" placeholder="Mobile number" maxlength="10"></div>
+      <div class="fg"><label>Crop</label><select id="f-crop" onchange="updateSprayOpts()"><option value="">-- Select Crop --</option></select></div>
+      <div class="fg"><label>Spray Number</label><select id="f-sprayno" onchange="calcNext()"><option value="">-- Select --</option></select></div>
+      <div class="fg"><label>Sowing Date</label><input type="date" id="f-sowing"></div>
+      <div class="fg"><label>Spray Date</label><input type="date" id="f-spraydate" onchange="calcNext()"></div>
+      <div class="fg ff"><label>Next Spray Preview</label><div class="prevbox" id="next-prev"></div></div>
+    </div>
+    <button class="bsub" onclick="saveTx()">Save Record</button>
+  </div>
+</div>
+
+<!-- ALL RECORDS -->
+<div class="sec" id="all-records">
+  <div class="fbar">
+    <input type="text" id="srch-rec" placeholder="Search farmer / crop..." oninput="renderRec()">
+    <select id="srch-st" onchange="renderRec()">
+      <option value="">All Status</option>
+      <option value="overdue">Overdue</option>
+      <option value="today">Today</option>
+      <option value="upcoming">Upcoming</option>
+      <option value="scheduled">Scheduled</option>
+      <option value="sprayed">Sprayed</option>
+    </select>
+  </div>
+  <div class="tw2">
+    <table>
+      <thead><tr><th>Date</th><th>Farmer</th><th>Phone</th><th>Crop</th><th>Spray#</th><th>Spray Date</th><th>Next Spray</th><th>Reminders</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="rec-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="sec" id="reports">
+  <div class="fbar">
+    <input type="date" id="rp-from">
+    <input type="date" id="rp-to">
+    <select id="rp-type" onchange="renderReports()">
+      <option value="">All Activity</option>
+      <option value="call">Calls Only</option>
+      <option value="wa">WhatsApp Only</option>
+      <option value="sprayed">Sprayed Events</option>
+      <option value="undo">Reversals</option>
+      <option value="promo">Promo Messages</option>
+    </select>
+    <button class="bsub" style="width:auto;margin:0;padding:7px 16px" onclick="renderReports()">Filter</button>
+  </div>
+  <div class="rpgrid" id="rp-summary"></div>
+  <div class="stitle">Detailed Activity Log</div>
+  <div id="rp-log"></div>
+</div>
+
+<!-- FARMERS -->
+<div class="sec" id="farmers">
+  <div class="fc" style="margin-bottom:16px">
+    <div class="stitle">&#128104; Add / Edit Farmer</div>
+    <div class="fgrid">
+      <div class="fg"><label>Farmer Name</label><input type="text" id="fr-name" placeholder="Full name"></div>
+      <div class="fg"><label>Phone Number</label><input type="tel" id="fr-phone" placeholder="10-digit mobile" maxlength="10"></div>
+      <div class="fg"><label>Village</label><input type="text" id="fr-village" placeholder="Village name"></div>
+      <div class="fg" style="justify-content:flex-end"><button class="bsub" style="margin-top:18px" onclick="saveFarmer()">Save Farmer</button></div>
+    </div>
+  </div>
+  <div class="tw2"><table><thead><tr><th>#</th><th>Name</th><th>Phone</th><th>Village</th><th>Actions</th></tr></thead><tbody id="fr-tbody"></tbody></table></div>
+</div>
+
+<!-- CROPS -->
+<div class="sec" id="crops">
+  <div class="fc" style="margin-bottom:16px">
+    <div class="stitle">&#127806; Add / Edit Crop &amp; Schedule</div>
+    <div class="fgrid">
+      <div class="fg ff"><label>Crop Name (Marathi / English)</label><input type="text" id="cr-name" placeholder="e.g. Kanda / Onion / Tomato"></div>
+    </div>
+    <div style="margin-top:13px">
+      <div class="stitle" style="font-size:.88rem;margin-bottom:7px">Spray Schedule - Gap Days Between Each Spray</div>
+      <div class="spbld" id="spray-bld"></div>
+      <button class="baddsp" onclick="addSpRw()">+ Add Another Spray</button>
+    </div>
+    <button class="bsub" style="margin-top:12px" onclick="saveCrop()">Save Crop &amp; Schedule</button>
+  </div>
+  <div class="tw2"><table><thead><tr><th>Crop</th><th>Total Sprays</th><th>Gap Schedule</th><th>Actions</th></tr></thead><tbody id="cr-tbody"></tbody></table></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="sec" id="settings">
+  <div class="fc" style="margin-bottom:16px">
+    <div class="stitle">&#128172; WhatsApp Message Template</div>
+    <p style="font-size:.79rem;color:var(--muted);margin-bottom:9px">Click a variable to insert at cursor position in the message.</p>
+    <div class="tvars">
+      <span class="vc" onclick="insVar('{{farmerName}}')">{{farmerName}}</span>
+      <span class="vc" onclick="insVar('{{crop}}')">{{crop}}</span>
+      <span class="vc" onclick="insVar('{{sprayNo}}')">{{sprayNo}}</span>
+      <span class="vc" onclick="insVar('{{sprayDate}}')">{{sprayDate}}</span>
+      <span class="vc" onclick="insVar('{{shopName}}')">{{shopName}}</span>
+      <span class="vc" onclick="insVar('{{productName}}')">{{productName}}</span>
+      <span class="vc" onclick="insVar('{{village}}')">{{village}}</span>
+    </div>
+    <div class="fg ff" style="margin-top:7px"><label>Message Template</label><textarea id="wa-tmpl" rows="6" oninput="updPreview()"></textarea></div>
+    <button class="bsub" style="margin-top:9px" onclick="saveTmpl()">Save Template</button>
+    <hr class="sep">
+    <div class="stitle">&#127978; Shop Info</div>
+    <div class="fgrid">
+      <div class="fg"><label>Shop Name</label><input type="text" id="sh-name" placeholder="Your shop name"></div>
+      <div class="fg"><label>Owner Name</label><input type="text" id="sh-owner" placeholder="Owner name"></div>
+      <div class="fg ff"><label>Default Product Name</label><input type="text" id="sh-product" placeholder="e.g. Keetaknashak Aushadh"></div>
+    </div>
+    <button class="bsub" onclick="saveShop()">Save Shop Info</button>
+  </div>
+  <div class="fc">
+    <div class="stitle">Message Preview (Sample)</div>
+    <div id="msg-prev" style="background:var(--gray);border-radius:9px;padding:13px;font-size:.87rem;white-space:pre-wrap;line-height:1.6;border:1px solid #dce8dc;min-height:60px;"></div>
+  </div>
+  <div class="fc" style="margin-top:16px">
+    <div class="stitle">&#128190; Backup &amp; Restore Data</div>
+    <p style="font-size:.79rem;color:var(--muted);margin-bottom:12px">Export all your farmers, schedules and records as a backup file. Import to restore on any device.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="bsub" style="flex:1;margin:0;padding:11px" onclick="exportData()">&#11015; Export Backup (.json)</button>
+      <button class="bsub" style="flex:1;margin:0;padding:11px;background:linear-gradient(135deg,#1565c0,#1976d2)" onclick="importData()">&#11014; Import / Restore</button>
+    </div>
+    <p style="font-size:.71rem;color:var(--muted);margin-top:9px">&#128274; Data is stored only on your device. Export regularly to avoid data loss.</p>
+  </div>
+</div>
+
+<!-- PROMO -->
+<div class="sec" id="promo">
+  <div class="fc" style="margin-bottom:16px">
+    <div class="stitle">&#128227; Send Promotional / Festival Message</div>
+    <div class="fg ff"><label>Message</label><textarea id="promo-msg" rows="5" placeholder="Type your promotional or festival message here..."></textarea></div>
+    <div style="margin-top:13px">
+      <div class="stitle" style="font-size:.86rem;margin-bottom:7px">Image Attachment</div>
+      <label style="display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:600;cursor:pointer;margin-bottom:9px">
+        <input type="checkbox" id="promo-img-cb" style="width:15px;height:15px;accent-color:var(--green)" onchange="togglePImg()">
+        Attach Image to Message
+      </label>
+      <div id="promo-img-sec" style="display:none">
+        <div class="imgbox" onclick="document.getElementById('promo-img-inp').click()">
+          <div id="promo-img-prev" style="font-size:2.2rem">&#128444;</div>
+          <p style="font-size:.79rem;color:var(--muted);margin-top:5px">Tap to select image (JPG / PNG)</p>
+          <input type="file" id="promo-img-inp" accept="image/*" style="display:none" onchange="handlePImg(event)">
+        </div>
+        <p style="font-size:.71rem;color:var(--muted);margin-top:5px">Note: WhatsApp will open - please attach image manually before sending.</p>
+      </div>
+    </div>
+    <hr class="sep">
+    <div class="stitle" style="font-size:.86rem">Select Farmers to Send</div>
+    <div style="display:flex;gap:7px;margin-bottom:7px;flex-wrap:wrap">
+      <button class="bsm be" onclick="selAll(true)">Select All</button>
+      <button class="bsm bd" onclick="selAll(false)">Deselect All</button>
+      <input type="text" id="promo-srch" placeholder="Filter farmers..." style="flex:1;min-width:120px;border:2px solid #dce8dc;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:.82rem;" oninput="renderPromoFmrs()">
+    </div>
+    <div class="fcblist" id="promo-flist"></div>
+    <button class="bsub" style="margin-top:12px" onclick="sendPromo()">Send to Selected Farmers via WhatsApp</button>
+  </div>
+  <div class="fc">
+    <div class="stitle">Promo Send History</div>
+    <div id="promo-hist"></div>
+  </div>
+</div>
+
+</main>
+
+<!-- UNDO MODAL -->
+<div class="overlay" id="undo-modal">
+  <div class="modal">
+    <h3>Reverse Sprayed Status?</h3>
+    <p style="font-size:.84rem;color:var(--muted);margin-bottom:11px">This restores the spray to pending. Action is recorded in audit log. No data will be deleted.</p>
+    <div class="fg"><label>Reason for reversal</label><input type="text" id="undo-reason" placeholder="e.g. Marked by mistake"></div>
+    <div class="mbtns">
+      <button class="bcan" onclick="closeModal()">Cancel</button>
+      <button class="bcon" style="background:var(--danger)" onclick="confirmUndo()">Yes, Reverse</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ================================================================
+// HELPER FUNCTIONS  (defined FIRST so they can be used in data)
+// ================================================================
+function fmtD(d) {
+  if (!d) return '-';
+  try { return new Date(d).toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}); }
+  catch(e) { return d; }
+}
+function fmtISO(iso) {
+  if (!iso) return '-';
+  try {
+    var d = new Date(iso);
+    return d.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}) + ' ' +
+           d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  } catch(e) { return iso; }
+}
+function tod() { return new Date().toISOString().split('T')[0]; }
+function nowISO() { return new Date().toISOString(); }
+function dAgo(n) { var d = new Date(); d.setDate(d.getDate()-n); return d.toISOString().split('T')[0]; }
+function dLater(n) { var d = new Date(); d.setDate(d.getDate()+n); return d.toISOString().split('T')[0]; }
+function ddiff(d) {
+  var t = new Date(tod()); t.setHours(0,0,0,0);
+  var x = new Date(d); x.setHours(0,0,0,0);
+  return Math.round((x - t) / 86400000);
+}
+function addD(d, n) { var x = new Date(d); x.setDate(x.getDate()+n); return x.toISOString().split('T')[0]; }
+function ini(name) {
+  return name.split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2);
+}
+function uid() { return 'id' + Date.now() + Math.random().toString(36).slice(2,5); }
+function toast(m) {
+  var t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+function scSt(sc) {
+  if (sc.status === 'sprayed') return 'sprayed';
+  if (!sc.nextSprayDate) return 'done';
+  var d = ddiff(sc.nextSprayDate);
+  if (d < 0) return 'overdue';
+  if (d === 0) return 'today';
+  if (d <= 3) return 'upcoming';
+  return 'scheduled';
+}
+
+// ================================================================
+// DEFAULT DATA  (uses helper functions defined above)
+// ================================================================
+var SK = 'kisanspray_v3';
+
+function makeDB() {
+  return {
+    farmers: [
+      {name:'Jagdish Shinde',   phone:'9423059903', village:'Musalgaon'},
+      {name:'Sarvesh Khule',    phone:'9511706002', village:'Vadangali'},
+      {name:'Vikram Bodake',    phone:'9800000001', village:'Lakhmapur'},
+      {name:'Suresh Patil',     phone:'9876543210', village:'Pimpalgaon'},
+      {name:'Ramesh Salunke',   phone:'9765432109', village:'Niphad'},
+      {name:'Dnyanoba Jagtap',  phone:'9654321098', village:'Yeola'},
+      {name:'Balu Nikam',       phone:'9543210987', village:'Chandwad'},
+      {name:'Santosh Bhosale',  phone:'9432109876', village:'Malegaon'},
+      {name:'Maruti Gaikwad',   phone:'9321098765', village:'Satana'},
+      {name:'Popat Sonawane',   phone:'9210987654', village:'Nandgaon'}
+    ],
+    crops: {
+      'Kanda':    [15, 15, 10],
+      'Kobi':     [10, 15, 15],
+      'Tamatar':  [12, 12, 10],
+      'Gehun':    [20, 20],
+      'Kapas':    [15, 15, 15, 10]
+    },
+    schedules: [
+      /* 1 - overdue */ {id:'sc01',date:dAgo(20),farmer:'Jagdish Shinde',  phone:'9423059903',crop:'Kanda',  sowingDate:dAgo(40),sprayNo:1,sprayDate:dAgo(20),nextSprayNo:2,nextSprayDate:dAgo(5), status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[{time:dAgo(20)+'T08:00:00.000Z',msg:'Schedule created'}]},
+      /* 2 - overdue */ {id:'sc02',date:dAgo(18),farmer:'Sarvesh Khule',   phone:'9511706002',crop:'Kobi',   sowingDate:dAgo(35),sprayNo:1,sprayDate:dAgo(18),nextSprayNo:2,nextSprayDate:dAgo(3), status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 3 - today  */ {id:'sc03',date:dAgo(12),farmer:'Vikram Bodake',   phone:'9800000001',crop:'Tamatar',sowingDate:dAgo(30),sprayNo:1,sprayDate:dAgo(12),nextSprayNo:2,nextSprayDate:dLater(0),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 4 - today  */ {id:'sc04',date:dAgo(20),farmer:'Suresh Patil',    phone:'9876543210',crop:'Kanda',  sowingDate:dAgo(45),sprayNo:2,sprayDate:dAgo(20),nextSprayNo:3,nextSprayDate:dLater(0),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 5 - 1 day  */ {id:'sc05',date:dAgo(10),farmer:'Ramesh Salunke',  phone:'9765432109',crop:'Kobi',   sowingDate:dAgo(28),sprayNo:1,sprayDate:dAgo(10),nextSprayNo:2,nextSprayDate:dLater(1),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 6 - 2 days */ {id:'sc06',date:dAgo(15),farmer:'Dnyanoba Jagtap', phone:'9654321098',crop:'Gehun',  sowingDate:dAgo(40),sprayNo:1,sprayDate:dAgo(15),nextSprayNo:2,nextSprayDate:dLater(2),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 7 - 3 days */ {id:'sc07',date:dAgo(12),farmer:'Balu Nikam',      phone:'9543210987',crop:'Kapas',  sowingDate:dAgo(35),sprayNo:1,sprayDate:dAgo(12),nextSprayNo:2,nextSprayDate:dLater(3),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 8 - sched  */ {id:'sc08',date:dAgo(8), farmer:'Santosh Bhosale', phone:'9432109876',crop:'Tamatar',sowingDate:dAgo(22),sprayNo:1,sprayDate:dAgo(8), nextSprayNo:2,nextSprayDate:dLater(4),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /* 9 - sched  */ {id:'sc09',date:dAgo(5), farmer:'Maruti Gaikwad',  phone:'9321098765',crop:'Kanda',  sowingDate:dAgo(20),sprayNo:1,sprayDate:dAgo(5), nextSprayNo:2,nextSprayDate:dLater(10),status:'pending',reminders:{r1Call:null,r1Msg:null,r2Call:null,r2Msg:null},auditLog:[]},
+      /*10 - sprayed */ {id:'sc10',date:dAgo(30),farmer:'Popat Sonawane',  phone:'9210987654',crop:'Kobi',   sowingDate:dAgo(50),sprayNo:1,sprayDate:dAgo(30),nextSprayNo:2,nextSprayDate:dAgo(15),status:'sprayed',reminders:{r1Call:fmtISO(dAgo(33)+'T09:00:00.000Z'),r1Msg:fmtISO(dAgo(33)+'T09:05:00.000Z'),r2Call:fmtISO(dAgo(31)+'T10:00:00.000Z'),r2Msg:fmtISO(dAgo(31)+'T10:10:00.000Z')},auditLog:[{time:dAgo(30)+'T08:00:00.000Z',msg:'Schedule created'},{time:dAgo(30)+'T11:00:00.000Z',msg:'Marked as Sprayed'}]},
+      /*11 - sprayed */ {id:'sc11',date:dAgo(28),farmer:'Jagdish Shinde',  phone:'9423059903',crop:'Kanda',  sowingDate:dAgo(40),sprayNo:2,sprayDate:dAgo(28),nextSprayNo:3,nextSprayDate:dAgo(13),status:'sprayed',reminders:{r1Call:fmtISO(dAgo(30)+'T08:00:00.000Z'),r1Msg:null,r2Call:null,r2Msg:null},auditLog:[{time:dAgo(28)+'T09:00:00.000Z',msg:'Marked as Sprayed'}]}
+    ],
+    sprayedLog: [
+      {id:'sl01',scheduleId:'sc10',farmer:'Popat Sonawane', phone:'9210987654',crop:'Kobi', sprayNo:2,sprayDate:dAgo(30),sprayedOn:dAgo(30)+'T11:00:00.000Z'},
+      {id:'sl02',scheduleId:'sc11',farmer:'Jagdish Shinde', phone:'9423059903',crop:'Kanda',sprayNo:3,sprayDate:dAgo(28),sprayedOn:dAgo(28)+'T09:00:00.000Z'}
+    ],
+    activityLog: [
+      {id:'al01',time:dAgo(33)+'T09:00:00.000Z',type:'call',   scId:'sc10',farmer:'Popat Sonawane', phone:'9210987654',crop:'Kobi', detail:'r1Call marked done'},
+      {id:'al02',time:dAgo(33)+'T09:05:00.000Z',type:'wa',     scId:'sc10',farmer:'Popat Sonawane', phone:'9210987654',crop:'Kobi', detail:'r1Msg WhatsApp sent'},
+      {id:'al03',time:dAgo(31)+'T10:00:00.000Z',type:'call',   scId:'sc10',farmer:'Popat Sonawane', phone:'9210987654',crop:'Kobi', detail:'r2Call marked done'},
+      {id:'al04',time:dAgo(31)+'T10:10:00.000Z',type:'wa',     scId:'sc10',farmer:'Popat Sonawane', phone:'9210987654',crop:'Kobi', detail:'r2Msg WhatsApp sent'},
+      {id:'al05',time:dAgo(30)+'T11:00:00.000Z',type:'sprayed',scId:'sc10',farmer:'Popat Sonawane', phone:'9210987654',crop:'Kobi', detail:'Spray #2 completed'},
+      {id:'al06',time:dAgo(30)+'T08:00:00.000Z',type:'call',   scId:'sc11',farmer:'Jagdish Shinde', phone:'9423059903',crop:'Kanda',detail:'r1Call marked done'},
+      {id:'al07',time:dAgo(28)+'T09:00:00.000Z',type:'sprayed',scId:'sc11',farmer:'Jagdish Shinde', phone:'9423059903',crop:'Kanda',detail:'Spray #3 completed'}
+    ],
+    promoHistory: [],
+    settings: {
+      shopName:    'Aapale Krushi Dukan',
+      shopOwner:   '',
+      productName: 'Keetaknashak Aushadh',
+      waTemplate:  'Namaste {{farmerName}} ji!\n\nAapachya {{crop}} pikachi Spray #{{sprayNo}} tarikh {{sprayDate}} la yet ahe.\n\nKrupaya velavar phavarnee kara.\n{{shopName}} madhe {{productName}} upalabdha ahe.\n\n- {{shopName}}'
+    }
+  };
+}
+
+// ================================================================
+// LOAD DB  (clear old broken data if present)
+// ================================================================
+var db;
+try {
+  var raw = localStorage.getItem(SK);
+  if (raw) {
+    var parsed = JSON.parse(raw);
+    // validate - must have schedules array
+    if (parsed && Array.isArray(parsed.schedules) && parsed.schedules.length > 0) {
+      db = parsed;
+    } else {
+      db = makeDB();
+    }
+  } else {
+    db = makeDB();
+  }
+} catch(e) {
+  db = makeDB();
+}
+
+function save() { localStorage.setItem(SK, JSON.stringify(db)); }
+
+// ================================================================
+// MSG BUILDER
+// ================================================================
+function buildMsg(sc) {
+  var s = db.settings;
+  var f = db.farmers.find(function(x){ return x.name === sc.farmer; }) || {};
+  return (s.waTemplate || '')
+    .replace(/\{\{farmerName\}\}/g, sc.farmer)
+    .replace(/\{\{crop\}\}/g, sc.crop)
+    .replace(/\{\{sprayNo\}\}/g, sc.nextSprayNo || sc.sprayNo)
+    .replace(/\{\{sprayDate\}\}/g, fmtD(sc.nextSprayDate || sc.sprayDate))
+    .replace(/\{\{shopName\}\}/g, s.shopName || '')
+    .replace(/\{\{productName\}\}/g, s.productName || '')
+    .replace(/\{\{village\}\}/g, f.village || '');
+}
+
+function logAct(type, scId, farmer, phone, crop, detail) {
+  db.activityLog.unshift({id:uid(), time:nowISO(), type:type, scId:scId, farmer:farmer, phone:phone, crop:crop, detail:detail});
+  save();
+}
+
+// ================================================================
+// TABS
+// ================================================================
+function showTab(id) {
+  document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tb').forEach(function(b){
+    if (b.getAttribute('onclick').indexOf("'" + id + "'") >= 0) b.classList.add('active');
+  });
+  if (id === 'dashboard')   renderDB();
+  if (id === 'all-records') renderRec();
+  if (id === 'reports')     renderReports();
+  if (id === 'farmers')     renderFmrs();
+  if (id === 'crops')       renderCrops();
+  if (id === 'settings')    loadSettings();
+  if (id === 'promo')       { renderPromoFmrs(); renderPromoHist(); }
+  if (id === 'add-tx')      populateForm();
+}
+
+// ================================================================
+// DASHBOARD
+// ================================================================
+function renderDB() {
+  var ov = [], td = [], up = [];
+  var mn = tod().slice(0, 7);
+  db.schedules.forEach(function(sc) {
+    var s = scSt(sc);
+    if (s === 'overdue')  ov.push(sc);
+    else if (s === 'today')    td.push(sc);
+    else if (s === 'upcoming') up.push(sc);
+  });
+  var dn = db.sprayedLog.filter(function(l){ return l.sprayedOn && l.sprayedOn.startsWith(mn); }).length;
+  document.getElementById('st-ov').textContent = ov.length;
+  document.getElementById('st-td').textContent = td.length;
+  document.getElementById('st-up').textContent = up.length;
+  document.getElementById('st-dn').textContent = dn;
+  renderCards('ov-list', ov, 'ov');
+  renderCards('td-list', td, 'td');
+  renderCards('up-list', up, 'up');
+}
+
+function renderCards(cid, list, type) {
+  var el = document.getElementById(cid);
+  if (!list.length) { el.innerHTML = '<div class="empty">No records here</div>'; return; }
+  el.innerHTML = list.map(function(sc){ return buildCard(sc, type); }).join('');
+}
+
+function buildCard(sc, type) {
+  var d = sc.nextSprayDate ? ddiff(sc.nextSprayDate) : 0;
+  var dLbl = type === 'ov' ? (Math.abs(d) + ' day(s) overdue') : type === 'td' ? 'Due Today!' : ('In ' + d + ' day(s)');
+  var bCls = type === 'ov' ? 'sbo' : type === 'td' ? 'sbt' : 'sbu';
+  var r = sc.reminders || {};
+  var idx = db.schedules.indexOf(sc);
+
+  function mkBtn(field, label) {
+    var done = !!r[field];
+    var isCall = field.indexOf('Call') >= 0;
+    var cls = 'trk ' + (isCall ? 'tc' : 'tw') + (done ? ' dk' : '');
+    var handler = '';
+    if (!done) {
+      handler = isCall ? 'logCall(' + idx + ",'" + field + "')" : "logWA(" + idx + ",'" + field + "')";
+    }
+    var dis = done ? ' disabled' : '';
+    return '<button class="' + cls + '" onclick="' + handler + '"' + dis + '>' + (done ? 'Done' : label) + '</button>';
+  }
+
+  var r1d = !!(r.r1Call && r.r1Msg);
+  var r2d = !!(r.r2Call && r.r2Msg);
+  var auditRows = (sc.auditLog || []).slice(-4).reverse().map(function(a){
+    return '<div class="atrlrow"><span class="at">' + fmtISO(a.time) + '</span><span>' + a.msg + '</span></div>';
+  }).join('');
+
+  var h = '<div class="rc ' + type + '">';
+  h += '<div class="rctop">';
+  h += '<div class="av">' + ini(sc.farmer) + '</div>';
+  h += '<div class="ci">';
+  h += '<div class="fn">' + sc.farmer + '</div>';
+  h += '<div class="cm"><span>Ph: ' + sc.phone + '</span><span>Crop: ' + sc.crop + '</span><span>Due: ' + fmtD(sc.nextSprayDate) + '</span></div>';
+  h += '<span class="sbadge ' + bCls + '">Spray #' + sc.nextSprayNo + ' - ' + dLbl + '</span>';
+  h += '</div>';
+  h += '<div class="rcbtns"><button class="bsp" onclick="markSprayed(' + idx + ')">&#9989; Sprayed</button></div>';
+  h += '</div>';
+  h += '<div class="rtr">';
+  h += '<div class="trtitle">Reminder Log - 2 Reminders (Call + WhatsApp each)</div>';
+  h += '<div class="trgrid">';
+  h += '<div class="tri' + (r1d ? ' rdone' : '') + '">';
+  h += '<div class="trl">&#128276; Reminder 1 (3 days before)</div>';
+  h += '<div class="trbs">' + mkBtn('r1Call', '&#128222; Mark Call') + mkBtn('r1Msg', '&#128172; Send WA') + '</div>';
+  h += '<div class="trts">Call: ' + (r.r1Call || 'Pending') + '<br>WA: ' + (r.r1Msg || 'Pending') + '</div></div>';
+  h += '<div class="tri' + (r2d ? ' rdone' : '') + '">';
+  h += '<div class="trl">&#128276; Reminder 2 (day before)</div>';
+  h += '<div class="trbs">' + mkBtn('r2Call', '&#128222; Mark Call') + mkBtn('r2Msg', '&#128172; Send WA') + '</div>';
+  h += '<div class="trts">Call: ' + (r.r2Call || 'Pending') + '<br>WA: ' + (r.r2Msg || 'Pending') + '</div></div>';
+  h += '</div></div>';
+  if (auditRows) h += '<div class="atrl"><div class="atrltitle">Audit Log</div>' + auditRows + '</div>';
+  h += '</div>';
+  return h;
+}
+
+// ================================================================
+// MARK SPRAYED - original schedule untouched, new child created
+// ================================================================
+function markSprayed(idx) {
+  var sc = db.schedules[idx];
+  if (!sc) { toast('Error: record not found'); return; }
+  if (sc.status === 'sprayed') { toast('Already marked as sprayed'); return; }
+  var ts = nowISO();
+  db.sprayedLog.push({
+    id: uid(), scheduleId: sc.id, farmer: sc.farmer, phone: sc.phone,
+    crop: sc.crop, sprayNo: sc.nextSprayNo, sprayDate: tod(), sprayedOn: ts
+  });
+  sc.status = 'sprayed';
+  sc.auditLog = sc.auditLog || [];
+  sc.auditLog.push({ time: ts, msg: 'Marked as Sprayed' });
+  var gaps = db.crops[sc.crop] || [];
+  var gi = (sc.nextSprayNo || 1) - 1;
+  if (gi < gaps.length) {
+    var nn = sc.nextSprayNo + 1;
+    var nd = addD(tod(), gaps[gi]);
+    db.schedules.push({
+      id: uid(), date: tod(), farmer: sc.farmer, phone: sc.phone, crop: sc.crop,
+      sowingDate: sc.sowingDate, sprayNo: sc.nextSprayNo, sprayDate: tod(),
+      nextSprayNo: nn, nextSprayDate: nd, status: 'pending',
+      reminders: {r1Call:null, r1Msg:null, r2Call:null, r2Msg:null},
+      parentId: sc.id,
+      auditLog: [{time: ts, msg: 'Created after Spray #' + sc.nextSprayNo + ' completed'}]
+    });
+    toast('Spray #' + sc.nextSprayNo + ' done! Next #' + nn + ' on ' + fmtD(nd));
+  } else {
+    toast('All sprays completed for ' + sc.farmer + '!');
+  }
+  logAct('sprayed', sc.id, sc.farmer, sc.phone, sc.crop, 'Spray #' + sc.nextSprayNo + ' completed');
+  save();
+  renderDB();
+}
+
+// ================================================================
+// UNDO SPRAYED
+// ================================================================
+var undoIdx = null;
+function openUndo(idx) {
+  undoIdx = idx;
+  document.getElementById('undo-reason').value = '';
+  document.getElementById('undo-modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('undo-modal').classList.remove('open');
+  undoIdx = null;
+}
+function confirmUndo() {
+  if (undoIdx === null) return;
+  var sc = db.schedules[undoIdx];
+  if (!sc) { closeModal(); return; }
+  var reason = document.getElementById('undo-reason').value.trim() || 'No reason given';
+  var ts = nowISO();
+  sc.status = 'pending';
+  sc.auditLog = sc.auditLog || [];
+  sc.auditLog.push({ time: ts, msg: 'Reversed. Reason: ' + reason });
+  // remove most recent sprayedLog for this schedule
+  for (var i = db.sprayedLog.length - 1; i >= 0; i--) {
+    if (db.sprayedLog[i].scheduleId === sc.id) { db.sprayedLog.splice(i, 1); break; }
+  }
+  // remove pending child schedules created from this
+  db.schedules = db.schedules.filter(function(s){
+    return !(s.parentId === sc.id && s.status === 'pending');
+  });
+  logAct('undo', sc.id, sc.farmer, sc.phone, sc.crop, 'Spray #' + sc.nextSprayNo + ' reversed. Reason: ' + reason);
+  save();
+  closeModal();
+  renderDB();
+  renderRec();
+  toast('Sprayed status reversed for ' + sc.farmer);
+}
+
+// ================================================================
+// CALL LOG (no phone redirect - just timestamp)
+// ================================================================
+function logCall(idx, field) {
+  var sc = db.schedules[idx];
+  if (!sc) return;
+  var ts = nowISO();
+  sc.reminders[field] = fmtISO(ts);
+  sc.auditLog = sc.auditLog || [];
+  sc.auditLog.push({ time: ts, msg: field + ' - Call logged' });
+  logAct('call', sc.id, sc.farmer, sc.phone, sc.crop, field + ' call logged');
+  save();
+  renderDB();
+  toast('Call logged for ' + sc.farmer + ' at ' + sc.reminders[field]);
+}
+
+// ================================================================
+// WA LOG + OPEN
+// ================================================================
+function logWA(idx, field) {
+  var sc = db.schedules[idx];
+  if (!sc) return;
+  var ts = nowISO();
+  sc.reminders[field] = fmtISO(ts);
+  sc.auditLog = sc.auditLog || [];
+  sc.auditLog.push({ time: ts, msg: field + ' - WhatsApp sent' });
+  var msg = encodeURIComponent(buildMsg(sc));
+  window.open('https://wa.me/91' + sc.phone + '?text=' + msg, '_blank');
+  logAct('wa', sc.id, sc.farmer, sc.phone, sc.crop, field + ' WhatsApp sent');
+  save();
+  renderDB();
+  toast('WhatsApp opened for ' + sc.farmer);
+}
+
+// ================================================================
+// ALL RECORDS
+// ================================================================
+function renderRec() {
+  var q = (document.getElementById('srch-rec').value || '').toLowerCase();
+  var sf = document.getElementById('srch-st').value;
+  var rows = db.schedules.filter(function(sc) {
+    var m = sc.farmer.toLowerCase().indexOf(q) >= 0 || sc.crop.toLowerCase().indexOf(q) >= 0;
+    return m && (!sf || scSt(sc) === sf);
+  });
+  var tbody = document.getElementById('rec-tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty">No records found</td></tr>'; return; }
+  var stMap = {
+    overdue:   '<span style="color:var(--danger);font-weight:700">Overdue</span>',
+    today:     '<span style="color:#a05000;font-weight:700">Today</span>',
+    upcoming:  '<span style="color:var(--green);font-weight:700">Upcoming</span>',
+    scheduled: '<span style="color:var(--muted)">Scheduled</span>',
+    sprayed:   '<span style="color:var(--blue);font-weight:700">Sprayed &#9989;</span>',
+    done:      '<span style="color:#999">All Done</span>'
+  };
+  tbody.innerHTML = rows.map(function(sc) {
+    var st = scSt(sc);
+    var r = sc.reminders || {};
+    var r1txt = (r.r1Call && r.r1Msg) ? '&#9989; R1' : '&#9744; R1';
+    var r2txt = (r.r2Call && r.r2Msg) ? '&#9989; R2' : '&#9744; R2';
+    var idx = db.schedules.indexOf(sc);
+    var undoB = (st === 'sprayed') ? '<button class="bsm be" onclick="openUndo(' + idx + ')">Undo</button>' : '';
+    return '<tr>'
+      + '<td>' + fmtD(sc.date) + '</td>'
+      + '<td><b>' + sc.farmer + '</b></td>'
+      + '<td>' + sc.phone + '</td>'
+      + '<td>' + sc.crop + '</td>'
+      + '<td>Spray #' + sc.sprayNo + '</td>'
+      + '<td>' + fmtD(sc.sprayDate) + '</td>'
+      + '<td>' + (sc.nextSprayDate ? fmtD(sc.nextSprayDate) + ' (#' + sc.nextSprayNo + ')' : '-') + '</td>'
+      + '<td style="font-size:.76rem">' + r1txt + '&nbsp;&nbsp;' + r2txt + '</td>'
+      + '<td>' + (stMap[st] || st) + '</td>'
+      + '<td><div class="fa">' + undoB + '</div></td>'
+      + '</tr>';
+  }).join('');
+}
+
+// ================================================================
+// REPORTS
+// ================================================================
+function renderReports() {
+  var from = document.getElementById('rp-from').value;
+  var to   = document.getElementById('rp-to').value;
+  var type = document.getElementById('rp-type').value;
+  var logs = db.activityLog.slice();
+  if (from) logs = logs.filter(function(l){ return l.time >= from; });
+  if (to)   logs = logs.filter(function(l){ return l.time <= (to + 'T23:59:59'); });
+  if (type) logs = logs.filter(function(l){ return l.type === type; });
+  var calls   = logs.filter(function(l){ return l.type === 'call'; }).length;
+  var was     = logs.filter(function(l){ return l.type === 'wa'; }).length;
+  var sprayed = logs.filter(function(l){ return l.type === 'sprayed'; }).length;
+  document.getElementById('rp-summary').innerHTML =
+    '<div class="rpc"><div class="rpico">&#128222;</div><div class="rpval">' + calls   + '</div><div class="rplbl">Calls Logged</div></div>' +
+    '<div class="rpc"><div class="rpico">&#128172;</div><div class="rpval">' + was     + '</div><div class="rplbl">WA Sent</div></div>' +
+    '<div class="rpc"><div class="rpico">&#9989;</div><div class="rpval">'   + sprayed + '</div><div class="rplbl">Sprayed Events</div></div>';
+  var ico = {call:'&#128222;', wa:'&#128172;', sprayed:'&#9989;', undo:'&#8617;', promo:'&#128227;', scheduled:'&#128203;'};
+  var lbl = {call:'Call Logged', wa:'WhatsApp Sent', sprayed:'Spray Completed', undo:'Undo/Reversal', promo:'Promo Message', scheduled:'Sale Recorded'};
+  var logEl = document.getElementById('rp-log');
+  if (!logs.length) { logEl.innerHTML = '<div class="empty">No activity in this date range</div>'; return; }
+  logEl.innerHTML = logs.map(function(l) {
+    return '<div class="logi">'
+      + '<div class="logico">' + (ico[l.type] || '&#128203;') + '</div>'
+      + '<div class="logb">'
+      + '<div class="logt">' + (lbl[l.type] || l.type) + ' - <b>' + (l.farmer || '-') + '</b></div>'
+      + '<div class="logm">Crop: ' + (l.crop || '-') + ' | Ph: ' + (l.phone || '-') + ' | ' + (l.detail || '') + '</div>'
+      + '</div>'
+      + '<div class="logtm">' + fmtISO(l.time) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ================================================================
+// FARMERS
+// ================================================================
+function renderFmrs() {
+  document.getElementById('fr-tbody').innerHTML = db.farmers.map(function(f, i) {
+    return '<tr>'
+      + '<td>' + (i+1) + '</td>'
+      + '<td><b>' + f.name + '</b></td>'
+      + '<td><a href="tel:' + f.phone + '" style="color:var(--green)">' + f.phone + '</a></td>'
+      + '<td>' + (f.village || '-') + '</td>'
+      + '<td><div class="fa">'
+      + '<button class="bsm be" onclick="editFmr(' + i + ')">Edit</button>'
+      + '<button class="bsm bd" onclick="delFmr(' + i + ')">Delete</button>'
+      + '</div></td></tr>';
+  }).join('');
+}
+function saveFarmer() {
+  var name    = document.getElementById('fr-name').value.trim();
+  var phone   = document.getElementById('fr-phone').value.trim();
+  var village = document.getElementById('fr-village').value.trim();
+  if (!name || !phone) { toast('Name and Phone are required'); return; }
+  var idx = db.farmers.findIndex(function(f){ return f.name === name; });
+  if (idx >= 0) db.farmers[idx] = {name:name, phone:phone, village:village};
+  else          db.farmers.push({name:name, phone:phone, village:village});
+  save(); renderFmrs(); populateForm();
+  ['fr-name','fr-phone','fr-village'].forEach(function(id){ document.getElementById(id).value = ''; });
+  toast('Farmer saved!');
+}
+function editFmr(i) {
+  var f = db.farmers[i];
+  document.getElementById('fr-name').value    = f.name;
+  document.getElementById('fr-phone').value   = f.phone;
+  document.getElementById('fr-village').value = f.village || '';
+}
+function delFmr(i) {
+  if (!confirm('Delete this farmer?')) return;
+  db.farmers.splice(i, 1); save(); renderFmrs(); toast('Farmer deleted');
+}
+
+// ================================================================
+// CROPS
+// ================================================================
+var spRws = [];
+function buildSpBld(gaps) { spRws = (gaps && gaps.length) ? gaps.slice() : [15]; renderSpBld(); }
+function renderSpBld() {
+  document.getElementById('spray-bld').innerHTML = spRws.map(function(g, i) {
+    return '<div class="sprw">'
+      + '<span class="splbl">Spray ' + (i+1) + '</span>'
+      + '<input type="number" id="sg-' + i + '" min="1" max="90" value="' + (g || '') + '" placeholder="Gap days" oninput="spRws[' + i + ']=parseInt(this.value)||0">'
+      + '<span class="spunit">days gap</span>'
+      + (spRws.length > 1 ? '<button class="brmsp" onclick="rmSpRw(' + i + ')">X</button>' : '')
+      + '</div>';
+  }).join('');
+}
+function addSpRw() { spRws.push(15); renderSpBld(); toast('Spray ' + spRws.length + ' added'); }
+function rmSpRw(i) { spRws.splice(i, 1); renderSpBld(); }
+function saveCrop() {
+  var name = document.getElementById('cr-name').value.trim();
+  if (!name) { toast('Crop name is required'); return; }
+  var gaps = spRws.map(function(_, i) {
+    var v = document.getElementById('sg-' + i);
+    return v ? (parseInt(v.value) || 0) : 0;
+  }).filter(function(g){ return g > 0; });
+  if (!gaps.length) { toast('At least one spray gap is needed'); return; }
+  db.crops[name] = gaps;
+  save(); renderCrops(); populateForm();
+  document.getElementById('cr-name').value = '';
+  buildSpBld([15]);
+  toast('Crop saved!');
+}
+function renderCrops() {
+  var entries = Object.keys(db.crops);
+  document.getElementById('cr-tbody').innerHTML = entries.map(function(name) {
+    var gaps = db.crops[name];
+    var safeName = name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<tr>'
+      + '<td><b>' + name + '</b></td>'
+      + '<td>' + gaps.length + ' Sprays</td>'
+      + '<td><div class="chips">' + gaps.map(function(g,i){ return '<span class="chip">S'+(i+1)+': '+g+'d</span>'; }).join('') + '</div></td>'
+      + '<td><div class="fa">'
+      + '<button class="bsm be" onclick="editCrop(\'' + safeName + '\')">Edit</button>'
+      + '<button class="bsm bd" onclick="delCrop(\'' + safeName + '\')">Delete</button>'
+      + '</div></td></tr>';
+  }).join('');
+}
+function editCrop(name) {
+  document.getElementById('cr-name').value = name;
+  buildSpBld(db.crops[name]);
+  showTab('crops');
+}
+function delCrop(name) {
+  if (!confirm('Delete crop "' + name + '"?')) return;
+  delete db.crops[name]; save(); renderCrops(); toast('Crop deleted');
+}
+
+// ================================================================
+// NEW SALE
+// ================================================================
+function populateForm() {
+  var fs = document.getElementById('f-farmer');
+  var pv = fs.value;
+  fs.innerHTML = '<option value="">-- Select Farmer --</option>'
+    + db.farmers.map(function(f){ return '<option value="' + f.name + '">' + f.name + ' (' + f.phone + ')</option>'; }).join('');
+  if (pv) fs.value = pv;
+  var cs = document.getElementById('f-crop');
+  var cp = cs.value;
+  cs.innerHTML = '<option value="">-- Select Crop --</option>'
+    + Object.keys(db.crops).map(function(c){ return '<option value="' + c + '">' + c + '</option>'; }).join('');
+  if (cp) cs.value = cp;
+  document.getElementById('f-spraydate').value = tod();
+}
+function fillPhone() {
+  var f = db.farmers.find(function(x){ return x.name === document.getElementById('f-farmer').value; });
+  document.getElementById('f-phone').value = f ? f.phone : '';
+}
+function updateSprayOpts() {
+  var crop = document.getElementById('f-crop').value;
+  var gaps = db.crops[crop] || [];
+  document.getElementById('f-sprayno').innerHTML = '<option value="">-- Select --</option>'
+    + gaps.map(function(_, i){ return '<option value="'+(i+1)+'">Spray '+(i+1)+'</option>'; }).join('');
+  calcNext();
+}
+function calcNext() {
+  var crop = document.getElementById('f-crop').value;
+  var sn   = parseInt(document.getElementById('f-sprayno').value);
+  var sd   = document.getElementById('f-spraydate').value;
+  var prev = document.getElementById('next-prev');
+  if (!crop || !sn || !sd) { prev.style.display = 'none'; return; }
+  var gaps = db.crops[crop];
+  if (!gaps) { prev.style.display = 'none'; return; }
+  prev.style.display = 'block';
+  var gi = sn - 1;
+  prev.textContent = gi < gaps.length
+    ? 'Next Spray (#'+(sn+1)+') due: '+fmtD(addD(sd, gaps[gi]))+' ('+gaps[gi]+' days gap)'
+    : 'Last scheduled spray for this crop!';
+}
+function saveTx() {
+  var farmer = document.getElementById('f-farmer').value;
+  var phone  = document.getElementById('f-phone').value;
+  var crop   = document.getElementById('f-crop').value;
+  var sn     = parseInt(document.getElementById('f-sprayno').value);
+  var sowing = document.getElementById('f-sowing').value;
+  var sd     = document.getElementById('f-spraydate').value;
+  if (!farmer || !phone || !crop || !sn || !sd) { toast('Please fill all required fields'); return; }
+  var gaps = db.crops[crop] || [];
+  var gi = sn - 1;
+  var nn = null, nd = null;
+  if (gi < gaps.length) { nn = sn + 1; nd = addD(sd, gaps[gi]); }
+  var sc = {
+    id: uid(), date: tod(), farmer: farmer, phone: phone, crop: crop,
+    sowingDate: sowing, sprayNo: sn, sprayDate: sd,
+    nextSprayNo: nn, nextSprayDate: nd, status: 'pending',
+    reminders: {r1Call:null, r1Msg:null, r2Call:null, r2Msg:null},
+    auditLog: [{time: nowISO(), msg: 'Schedule created'}]
+  };
+  db.schedules.push(sc);
+  logAct('scheduled', sc.id, farmer, phone, crop, 'Spray #' + sn + ' sale recorded');
+  save();
+  toast('Saved! Next spray: ' + (nd ? fmtD(nd) : 'All done'));
+  ['f-farmer','f-phone','f-crop','f-sowing'].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('f-sprayno').innerHTML = '<option value="">-- Select --</option>';
+  document.getElementById('f-spraydate').value = tod();
+  document.getElementById('next-prev').style.display = 'none';
+}
+
+// ================================================================
+// SETTINGS
+// ================================================================
+function loadSettings() {
+  var s = db.settings;
+  document.getElementById('wa-tmpl').value    = s.waTemplate    || '';
+  document.getElementById('sh-name').value    = s.shopName      || '';
+  document.getElementById('sh-owner').value   = s.shopOwner     || '';
+  document.getElementById('sh-product').value = s.productName   || '';
+  updPreview();
+}
+function saveTmpl() {
+  db.settings.waTemplate = document.getElementById('wa-tmpl').value;
+  save(); updPreview(); toast('Template saved!');
+}
+function saveShop() {
+  db.settings.shopName    = document.getElementById('sh-name').value.trim();
+  db.settings.shopOwner   = document.getElementById('sh-owner').value.trim();
+  db.settings.productName = document.getElementById('sh-product').value.trim();
+  save(); updPreview(); toast('Shop info saved!');
+}
+function insVar(v) {
+  var ta = document.getElementById('wa-tmpl');
+  var s  = ta.selectionStart, e = ta.selectionEnd;
+  ta.value = ta.value.slice(0, s) + v + ta.value.slice(e);
+  ta.selectionStart = ta.selectionEnd = s + v.length;
+  ta.focus(); updPreview();
+}
+function updPreview() {
+  var tmpl = document.getElementById('wa-tmpl').value;
+  var preview = (tmpl || '')
+    .replace(/\{\{farmerName\}\}/g, 'Jagdish Shinde')
+    .replace(/\{\{crop\}\}/g, 'Kanda')
+    .replace(/\{\{sprayNo\}\}/g, '2')
+    .replace(/\{\{sprayDate\}\}/g, fmtD(addD(tod(), 3)))
+    .replace(/\{\{shopName\}\}/g, db.settings.shopName || 'Your Shop')
+    .replace(/\{\{productName\}\}/g, db.settings.productName || 'Pesticide')
+    .replace(/\{\{village\}\}/g, 'Musalgaon');
+  document.getElementById('msg-prev').textContent = preview;
+}
+
+// ================================================================
+// PROMO
+// ================================================================
+function renderPromoFmrs() {
+  var q = (document.getElementById('promo-srch').value || '').toLowerCase();
+  var list = db.farmers.filter(function(f){
+    return f.name.toLowerCase().indexOf(q) >= 0 || (f.village || '').toLowerCase().indexOf(q) >= 0;
+  });
+  document.getElementById('promo-flist').innerHTML = list.map(function(f) {
+    return '<div class="fcbrow">'
+      + '<input type="checkbox" id="pcb-' + f.phone + '" value="' + f.phone + '" class="promo-cb">'
+      + '<label for="pcb-' + f.phone + '"><b>' + f.name + '</b> - ' + f.phone + (f.village ? ' (' + f.village + ')' : '') + '</label>'
+      + '</div>';
+  }).join('');
+}
+function selAll(v) {
+  document.querySelectorAll('.promo-cb').forEach(function(cb){ cb.checked = v; });
+}
+function togglePImg() {
+  document.getElementById('promo-img-sec').style.display = document.getElementById('promo-img-cb').checked ? 'block' : 'none';
+}
+function handlePImg(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    document.getElementById('promo-img-prev').innerHTML = '<img src="' + ev.target.result + '" style="max-width:200px;max-height:130px;border-radius:9px;object-fit:cover">';
+  };
+  r.readAsDataURL(file);
+}
+function sendPromo() {
+  var msg = document.getElementById('promo-msg').value.trim();
+  if (!msg) { toast('Please type a message'); return; }
+  var sel = Array.prototype.slice.call(document.querySelectorAll('.promo-cb:checked')).map(function(cb){ return cb.value; });
+  if (!sel.length) { toast('Select at least one farmer'); return; }
+  var hasImg  = document.getElementById('promo-img-cb').checked;
+  var imgFile = document.getElementById('promo-img-inp').files[0];
+  sel.forEach(function(phone, i) {
+    var f = db.farmers.find(function(x){ return x.phone === phone; });
+    if (!f) return;
+    setTimeout(function(){ window.open('https://wa.me/91' + phone + '?text=' + encodeURIComponent(msg), '_blank'); }, i * 600);
+    logAct('promo', null, f.name, phone, '-', 'Promo message sent');
+  });
+  db.promoHistory.unshift({id:uid(), time:nowISO(), msg:msg, count:sel.length, hasImg: hasImg && !!imgFile});
+  save();
+  toast('WhatsApp opened for ' + sel.length + ' farmer(s)');
+  if (hasImg && imgFile) setTimeout(function(){ toast('Please attach image manually in WhatsApp'); }, 1600);
+  renderPromoHist();
+}
+function renderPromoHist() {
+  var el = document.getElementById('promo-hist');
+  if (!db.promoHistory.length) { el.innerHTML = '<div class="empty">No promo sent yet</div>'; return; }
+  el.innerHTML = db.promoHistory.slice(0, 20).map(function(p) {
+    return '<div class="logi">'
+      + '<div class="logico">&#128227;</div>'
+      + '<div class="logb"><div class="logt">Promo sent to ' + p.count + ' farmer(s)' + (p.hasImg ? ' [+Image]' : '') + '</div>'
+      + '<div class="logm" style="white-space:pre-wrap">' + p.msg.slice(0, 100) + (p.msg.length > 100 ? '...' : '') + '</div></div>'
+      + '<div class="logtm">' + fmtISO(p.time) + '</div></div>';
+  }).join('');
+}
+
+// ================================================================
+// INIT
+// ================================================================
+document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+var mn = tod().slice(0, 7);
+document.getElementById('rp-from').value = mn + '-01';
+document.getElementById('rp-to').value   = tod();
+buildSpBld([15]);
+populateForm();
+renderDB();
+renderCrops();
+
+
+// ================================================================
+// PWA - Service Worker + Install Prompt
+// ================================================================
+var deferredPrompt = null;
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+      console.log('KisanSpray SW registered:', reg.scope);
+    }).catch(function(err) {
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+
+// Capture install prompt
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show banner after 3 seconds
+  setTimeout(function() {
+    var dismissed = localStorage.getItem('pwa_dismissed');
+    var installed = localStorage.getItem('pwa_installed');
+    if (!dismissed && !installed) {
+      document.getElementById('pwa-banner').style.display = 'block';
+    }
+  }, 3000);
+});
+
+function installPWA() {
+  if (!deferredPrompt) {
+    // Fallback instructions
+    toast('Open browser menu → Add to Home Screen');
+    dismissBanner();
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result) {
+    if (result.outcome === 'accepted') {
+      localStorage.setItem('pwa_installed', '1');
+      toast('\u2705 KisanSpray installed successfully!');
+    }
+    dismissBanner();
+    deferredPrompt = null;
+  });
+}
+
+function dismissBanner() {
+  document.getElementById('pwa-banner').style.display = 'none';
+  localStorage.setItem('pwa_dismissed', Date.now().toString());
+}
+
+// Offline / Online detection
+window.addEventListener('offline', function() {
+  document.getElementById('offline-badge').classList.add('show');
+});
+window.addEventListener('online', function() {
+  document.getElementById('offline-badge').classList.remove('show');
+  toast('\u2705 Back online!');
+});
+if (!navigator.onLine) {
+  document.getElementById('offline-badge').classList.add('show');
+}
+
+// App installed event
+window.addEventListener('appinstalled', function() {
+  localStorage.setItem('pwa_installed', '1');
+  document.getElementById('pwa-banner').style.display = 'none';
+  toast('\u2705 App installed on your device!');
+});
+
+// Splash screen - hide after 1.8s
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var splash = document.getElementById('splash');
+    if (splash) {
+      splash.classList.add('hidden');
+      setTimeout(function() { splash.style.display = 'none'; }, 500);
+    }
+  }, 1800);
+});
+
+// Handle hash navigation (shortcuts)
+window.addEventListener('load', function() {
+  var hash = window.location.hash.replace('#','');
+  if (hash && document.getElementById(hash)) {
+    setTimeout(function() { showTab(hash); }, 2000);
+  }
+});
+
+// Backup / Restore data
+function exportData() {
+  var data = JSON.stringify(db, null, 2);
+  var blob = new Blob([data], {type: 'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'kisanspray-backup-' + tod() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('\u2705 Backup downloaded!');
+}
+
+function importData() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var imported = JSON.parse(ev.target.result);
+        if (!imported.schedules || !imported.farmers) throw new Error('Invalid file');
+        db = imported;
+        save();
+        renderDB();
+        toast('\u2705 Data restored successfully!');
+      } catch(err) {
+        toast('\u274c Invalid backup file!');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+</script>
+</body>
+</html>
